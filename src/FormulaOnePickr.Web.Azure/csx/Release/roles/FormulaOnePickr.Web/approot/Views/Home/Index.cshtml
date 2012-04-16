@@ -1,0 +1,79 @@
+﻿<style type="text/css">
+    ul { list-style: none; margin: 0; padding: 0; width: 100% }
+    ul li { border-bottom: 1px dotted #ddd; height: 30px;  }
+    ul li:hover { background-color: lightyellow }
+    ul li div { display: inline-block; float: left;line-height: 30px;overflow: hidden; white-space: nowrap; text-overflow: ellipsis} 
+    .list-header { font-weight: bold;background-color: yellowgreen; color: white  }
+    ul .list-header:hover { font-weight: bolder;background-color: yellowgreen;}
+    .team { width: 30%; padding-left: 6px}
+    .first-name { width: 15%}
+    .last-name { width: 15%}
+    .nationality { width: 15%}
+    .place-of-birth { width: 24% }
+    h2:last-of-type { clear: both; }
+</style>
+
+<script type="text/javascript">
+    var url = (document.location.hostname == "localhost") ? 'http://localhost:8003/FormulaOnePickrService.svc/' : "http://formulapickrservice.cloudapp.net/FormulaOnePickrService.svc/";
+    
+    $(function () {
+        var urlGet = url + 'getdrivers';
+        $.getJSON(urlGet, function (data) {
+            var parsed = JSON.parse(data);
+            console.log(parsed);
+            $.each(parsed, function () {
+                var listItem = $("<li/>");
+                var team = $("<div/>", { className: "team" }).append(this.teamName);
+                var firstName = $("<div/>", { className: "first-name"}).append(this.firstName);
+                var lastName = $("<div/>", { className: "last-name"}).append(this.lastName);
+                var nationality = $("<div/>", { className: "nationality"}).append(this.nationality);
+                var placeOfBirth = $("<div/>", { className: "place-of-birth" }).append(this.placeOfBirth);
+                
+                listItem.append(team, firstName, lastName, nationality, placeOfBirth).appendTo('#ajax-drivers');
+            });
+            $('#raw').text(data);
+        });
+    });
+</script>
+
+@model List<CleverDogStudios.FormulaOnePickr.Core.Drivers.Driver>
+@{ ViewBag.Title = "Home Page"; }
+
+
+<h2>@ViewBag.Message</h2>
+
+<ul>
+    <li class="list-header">
+        <div class="team">Team</div>
+        <div class="first-name">First Name</div>
+        <div class="last-name">Last Name</div>
+        <div class="nationality">Nationality</div>
+        <div class="place-of-birth">Place of Birth</div>
+    </li>
+    @foreach (var item in Model.Select((model, index) => new { index, model }))
+    {
+        <li>
+            <div class="team">@(item.model.Team.FullName)</div>
+            <div class="first-name">@(item.model.FirstName)</div>
+            <div class="last-name">@(item.model.LastName)</div>
+            <div class="nationality">@(item.model.Nationality)</div>
+            <div class="place-of-birth">@(item.model.PlaceOfBirth)</div>
+        </li>
+    }
+</ul>
+ 
+<h2>F1 Drivers - AJAX</h2>
+
+<ul id="ajax-drivers">
+    <li class="list-header">
+        <div class="team">Team</div>
+        <div class="first-name">First Name</div>
+        <div class="last-name">Last Name</div>
+        <div class="nationality">Nationality</div>
+        <div class="place-of-birth">Place of Birth</div>
+    </li>
+</ul>
+
+<h2>Raw JSON</h2>
+<div id="raw" />
+
